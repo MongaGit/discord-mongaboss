@@ -9,7 +9,17 @@ discord-mongaboss
 - `!admin list`: Lista todos os usuários que atualmente possuem a role "Administrador".  
 - `!admin help`: Exibe informações de ajuda sobre os comandos disponíveis.  
    
-## Configuração e Uso  
+## Configuração e Uso
+
+### Uso com Docker  
+``` 
+docker run -d  `
+    -e DISCORD_TOKEN=********* `
+    -e ROLE_ADMIN=Administrador `
+    -e ROLE_MONGA=🐵monga `
+    --name mongaboss lorthe/discord-mongaboss:latest  
+
+```
    
 ### Pré-requisitos  
    
@@ -37,12 +47,7 @@ discord-mongaboss
    ```  
    node bot.js  
    ```  
-   
-### Uso com Docker  
-``` 
-docker run -d --name mongaboss -e DISCORD_TOKEN_01=discord_token_here lorthe/discord-mongaboss:latest  
-```  
-   
+
 ### Deployment Para Docker
 ```  
 docker build -t lorthe/discord-mongaboss .

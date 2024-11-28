@@ -2,10 +2,21 @@ require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const { handleCommand } = require('./commands/handleCommand');
 
-// definindo variáveis de ambiente ROLE_ADMIN e ROLE_MONGA  
-process.env.ROLE_MONGA = '🐵monga';
-process.env.ROLE_ADMIN = 'Administrador';
-process.env.TIME_ROLE = '1440'; // Tempo em minutos | 1440 = 24 horas
+// definindo variáveis de ambiente ROLE_ADMIN e ROLE_MONGA  se elas não tiverem sido definidas
+if (!process.env.ROLE_ADMIN) {
+    process.env.ROLE_ADMIN = '🐵monga';
+}
+if (!process.env.ROLE_MONGA) {
+    process.env.ROLE_MONGA = 'Administrador';
+}
+if (!process.env.TIME_ROLE) {
+    process.env.TIME_ROLE = '1440';
+}
+
+// log dos valores das variáveis de ambiente
+console.log (`ROLE_ADMIN: ${process.env.ROLE_ADMIN}`);
+console.log (`ROLE_MONGA: ${process.env.ROLE_MONGA}`);
+console.log (`TIME_ROLE: ${process.env.TIME_ROLE}`);
 
 const client = new Client({
     intents: [
@@ -24,4 +35,4 @@ client.on('messageCreate', message => {
     handleCommand(message);
 });
 
-client.login(process.env.DISCORD_TOKEN_01);
+client.login(process.env.DISCORD_TOKEN);
