@@ -27,14 +27,14 @@ docker run -d  `
 - NPM  
 - Docker (para deployment usando Docker)  
    
-### Configuração Local  
+### Configuração Local
    
 1. Clone o repositório:  
    ```  
    git clone https://github.com/MongaGit/discord-mongaboss.git  
    cd discord-mongaboss  
    ```  
-3. Instale as dependências:  
+3. Instale as dependências:
    ```  
    npm install  
    ```  
