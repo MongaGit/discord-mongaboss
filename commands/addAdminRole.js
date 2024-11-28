@@ -1,31 +1,24 @@
-const timers = new Map();
-
-async function addAdminRole(message, logChannel) {
+async function addAdminRole(message) {
     const adminRole = message.guild.roles.cache.find(role => role.name === process.env.ROLE_ADMIN);
     if (!adminRole) {
-        logChannel.send('⚠️ Role admin não encontrada!');
-        return message.reply('Role admin não encontrada!');
+        return message.reply(`Role ${process.env.ROLE_ADMIN} não encontrada!`);
     }
 
     try {
         await message.member.roles.add(adminRole);
-        message.reply(`Role ${process.env.ROLE_ADMIN} atribuída por 1 hora!`);
-        logChannel.send(`${message.author.tag} teve a role ${process.env.ROLE_ADMIN} atribuída.`);
+        // Converte minutos para horas  
+        const hours = (parseInt(process.env.TIME_ROLE) / 60).toFixed(2);  // Converte os minutos em horas com duas casas decimais  
+        message.reply(`Role ${process.env.ROLE_ADMIN} atribuída por ${hours} horas!`);
 
-        clearTimeout(timers.get(message.author.id));
-        const timer = setTimeout(async () => {
+        setTimeout(async () => {
             if (message.member.roles.cache.has(adminRole.id)) {
                 await message.member.roles.remove(adminRole);
-                message.member.send(`Sua role ${process.env.ROLE_ADMIN} foi removida após 1 hora.`);
-                logChannel.send(`${message.author.tag} teve a role ${process.env.ROLE_ADMIN} removida.`);
+                message.channel.send(`${message.member.user.tag} teve a role ${process.env.ROLE_ADMIN} removida após ${hours} horas.`);
             }
-        }, 3600000); // 1 hora em milissegundos
-
-        timers.set(message.author.id, timer);
+        }, parseInt(process.env.TIME_ROLE) * 60000); // Converte minutos para milissegundos  
     } catch (error) {
-        logChannel.send(`Erro ao adicionar a role: ${error}`);
         message.reply('Ocorreu um erro ao atribuir a role.');
     }
 }
 
-module.exports = { addAdminRole };
+module.exports = { addAdminRole };  
