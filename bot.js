@@ -2,12 +2,14 @@ require('dotenv').config();
 const { Client, Intents } = require('discord.js');
 const { adminRoleCommand } = require('./commands/adminRoleCommand');
 
-// definindo variáveis de ambiente ROLE_ADMIN e ROLE_MONGA
+// definindo variáveis de ambiente ROLE_ADMIN e ROLE_MONGA  
 process.env.ROLE_MONGA = '🐵monga';
 process.env.ROLE_ADMIN = 'Administrador';
 
-//loga no console dos valores de process.env
+// loga no console dos valores de process.env  
 console.log('process.env.DISCORD_TOKEN_01:', process.env.DISCORD_TOKEN_01);
+console.log('process.env.ROLE_ADMIN:', process.env.ROLE_ADMIN);
+console.log('process.env.ROLE_MONGA:', process.env.ROLE_MONGA);
 
 const client = new Client({
     intents: [

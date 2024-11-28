@@ -1,0 +1,8 @@
+services:
+  bot:
+    build: .
+    container_name: bot-mongaboss
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/node_modules
