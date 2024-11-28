@@ -13,12 +13,12 @@ discord-mongaboss
 
 ### Uso com Docker  
 ``` 
-docker run -d  `
-    -e DISCORD_TOKEN=********* `
-    -e ROLE_ADMIN=Administrador `
-    -e ROLE_MONGA=🐵monga `
-    --name mongaboss lorthe/discord-mongaboss:latest  
-
+docker run -d \
+  -e DISCORD_TOKEN="*********" \
+  -e ROLE_ADMIN="Administrador" \
+  -e ROLE_MONGA="🐵monga" \
+  -e TIME_ROLE="1440" \
+  --name mongaboss lorthe/discord-mongaboss:latest  
 ```
    
 ### Pré-requisitos  
