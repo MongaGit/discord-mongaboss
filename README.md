@@ -40,7 +40,7 @@ discord-mongaboss
    
 ### Uso com Docker  
 ``` 
-docker-compose up -d
+docker run -d --name mongaboss -e DISCORD_TOKEN_01=discord_token_here lorthe/discord-mongaboss:latest  
 ```  
    
 ### Deployment Para Docker
