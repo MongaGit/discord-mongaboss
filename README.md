@@ -22,9 +22,6 @@ discord-mongaboss
 1. Clone o repositório:  
    ```  
    git clone https://github.com/MongaGit/discord-mongaboss.git  
-   ```  
-2. Entre no diretório do projeto:  
-   ```  
    cd discord-mongaboss  
    ```  
 3. Instale as dependências:  
@@ -42,37 +39,24 @@ discord-mongaboss
    ```  
    
 ### Uso com Docker  
+``` 
+docker-compose up -d
+```  
    
-1. Construa a imagem Docker:  
-   ```  
-   docker build -t lorthe/discord-mongaboss .  
-   ```  
-2. Faça login no Docker Hub:  
-   ```  
-   docker login  
-   ```  
-3. Envie a imagem para o Docker Hub:  
-   ```  
-   docker push lorthe/discord-mongaboss  
-   ```  
-4. Execute o bot usando Docker Compose:  
-   ```  
-   docker-compose up -d  
-   ```  
-   
+### Deployment Para Docker
+```  
+docker build -t lorthe/discord-mongaboss .
+docker push lorthe/discord-mongaboss 
+```  
 
-
-
-
-
-
-
-
+### Deployment Para Docker
+```bash
+chmod +x deploy.sh
+./deploy.sh  
+```
 
   
-### Configuração Local  
-  
-1. Clone o repositório:  
+### Configuração Local   
 
 ```bash
 # Install dependencies
