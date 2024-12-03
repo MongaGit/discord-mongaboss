@@ -11,50 +11,50 @@ const rolesMap = {
 };
 
 async function handleCommand(interaction) {
-    const subcommand = interaction.options.getSubcommand();
-    const roleKey = subcommand;  // Captura o subcomando como a role
-    const target = interaction.options.getMember('user') || interaction.member;
+    if (!interaction.isCommand()) return;
 
-    console.log(`Comando detectado: ${interaction.commandName}`);
-    console.log(`Subcomando: ${subcommand}`);
-    console.log(`Usuário alvo: ${target.user.tag}`);
+    const { commandName, options, member } = interaction;
 
-    if (!rolesMap[roleKey]) {
-        await interaction.reply('Cargo não reconhecido.');
-        return;
-    }
+    if (commandName === 'cargo') {
+        const subcommand = options.getSubcommand();
+        const roleKey = subcommand;  // Capturando o subcomando como cargo
+        const target = options.getMember('user') || member;
 
-    try {
-        if (roleKey === 'admin') {
-            if (!interaction.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
-                await interaction.reply('Você não tem permissão para usar este comando.');
-                return;
+        try {
+            if (roleKey && rolesMap[roleKey]) {
+                // Verifica permissões para cargos especiais (admin ou mod)
+                if (roleKey === 'admin' && !member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
+                    await interaction.reply('Você não tem permissão para usar este comando.');
+                    return;
+                }
+                await toggleRole(interaction, target, rolesMap[roleKey]);
+            } else {
+                await interaction.reply('Cargo não reconhecido.');
             }
-            await manageRole(interaction, target, rolesMap[roleKey], true);
-        } else {
-            await manageRole(interaction, target, rolesMap[roleKey], false);
+        } catch (error) {
+            console.error('Erro no comando:', error);
+            await interaction.reply('Houve um erro ao executar o comando.');
         }
-    } catch (error) {
-        console.error('Erro no comando:', error);
-        await interaction.reply('Houve um erro ao executar o comando.');
     }
 }
 
-async function manageRole(interaction, target, roleName, temporary) {
+async function toggleRole(interaction, target, roleName) {
     const role = interaction.guild.roles.cache.find(r => r.name === roleName);
+
     if (!role) {
         await interaction.reply(`Cargo "${roleName}" não encontrado.`);
         return;
     }
 
-    await target.roles.add(role);
-    await interaction.reply(`${target.user.tag} agora tem o cargo ${roleName}.`);
-
-    if (temporary) {
-        setTimeout(async () => {
-            await target.roles.remove(role);
-            interaction.followUp(`${target.user.tag} teve o cargo ${roleName} removido após ${process.env.TIME_ROLE} minutos.`);
-        }, parseInt(process.env.TIME_ROLE) * 60000);
+    // Verifica se o usuário já tem o cargo
+    if (target.roles.cache.has(role.id)) {
+        // Remove o cargo se o usuário já tiver
+        await target.roles.remove(role);
+        await interaction.reply(`${target.user.tag} teve o cargo ${roleName} removido.`);
+    } else {
+        // Adiciona o cargo se o usuário não tiver
+        await target.roles.add(role);
+        await interaction.reply(`${target.user.tag} agora tem o cargo ${roleName}.`);
     }
 }
 
