@@ -16,15 +16,25 @@ const rolesMap = {
 
 module.exports = async (interaction, client) => {
     if (interaction.commandName === 'cargo') {
+        // Log para verificar o que é recebido no comando
+        console.log(`Comando '/cargo' recebido: ${JSON.stringify(interaction.options.data)}`);
+
         const target = interaction.options.getMember('usuario');
         const roleName = interaction.options.getString('cargo');
 
-        // Log para depuração
+        // Log para depuração: Verificar se o cargo foi capturado corretamente
         console.log(`Comando recebido para adicionar/remover o cargo: ${roleName}`);
+
+        // Verifica se o nome do cargo foi passado corretamente
+        if (!roleName) {
+            await interaction.reply('Você precisa especificar um cargo.');
+            return;
+        }
 
         // Verifica se o cargo existe no rolesMap
         if (!rolesMap[roleName]) {
             await interaction.reply('Cargo não encontrado.');
+            console.log(`Cargo não encontrado no mapa: ${roleName}`);
             return;
         }
 
@@ -34,7 +44,8 @@ module.exports = async (interaction, client) => {
         // Verifica se a role existe no servidor
         const role = interaction.guild.roles.cache.find(r => r.name === roleNameMapped);
         if (!role) {
-            await interaction.reply(`Cargo "${roleNameMapped}" não encontrado.`);
+            await interaction.reply(`Cargo "${roleNameMapped}" não encontrado no servidor.`);
+            console.log(`Cargo não encontrado no servidor: ${roleNameMapped}`);
             return;
         }
 
@@ -46,6 +57,7 @@ module.exports = async (interaction, client) => {
             const mongaRole = interaction.guild.roles.cache.find(r => r.name === ROLE_MONGA_NAME);
             if (!mongaRole || !interaction.member.roles.cache.has(mongaRole.id)) {
                 await interaction.reply('Você não tem permissão para usar este comando.');
+                console.log(`Usuário ${interaction.user.tag} não tem permissão para usar este comando.`);
                 return;
             }
         }
