@@ -1,62 +1,62 @@
-﻿const { PermissionsBitField } = require('discord.js');
+﻿const { EmbedBuilder, PermissionsBitField } = require('discord.js');
+require('dotenv').config();
 
-// Role fixa '🐵monga' para verificação
-const ROLE_MONGA_NAME = '🐵monga';
+// carregar LOG_CHANNEL_ID, se não existir colocar valor padrao
+const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || '123456789012345678';
+// carregar ROLE_MONGA_NAME, se não existir colocar valor padrao
+const ROLE_MONGA_NAME = process.env.ROLE_MONGA_NAME || '🐵monga';
 
-const rolesMap = {
-    'rpg': '🎲rpg',
-    'game': '🎮game',
-    'dev-art': '🖌️dev-art',
-    'rpg-mod': '🎲rpg-mod',
-    'game-mod': '🎮game-mod',
-    'dev-art-mod': '🖌️dev-art-mod',
-    'admin': 'Administrador'
-};
+module.exports = async (interaction, client) => {
+    if (interaction.commandName === 'cargo') {
+        const target = interaction.options.getMember('usuario');
+        const roleName = interaction.options.getString('cargo');
 
-async function handleCommand(interaction) {
-    if (!interaction.isCommand()) return;
+        // Verifica permissões do usuário que executa o comando
+        const mongaRole = interaction.guild.roles.cache.find(r => r.name === ROLE_MONGA_NAME);
+        if (!mongaRole || !interaction.member.roles.cache.has(mongaRole.id)) {
+            await interaction.reply('Você não tem permissão para usar este comando.');
+            return;
+        }
 
-    const { commandName, options, member } = interaction;
+        // Verifica se o bot tem permissão para gerenciar cargos
+        if (!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageRoles)) {
+            await interaction.reply('Eu não tenho permissão para gerenciar cargos. Verifique minhas permissões.');
+            return;
+        }
 
-    if (commandName === 'cargo') {
-        const subcommand = options.getSubcommand();
-        const roleKey = subcommand;
-        const target = options.getMember('user') || member;
+        // Lógica de adicionar/remover cargo
+        const role = interaction.guild.roles.cache.find(r => r.name === roleName);
+        if (!role) {
+            await interaction.reply(`Cargo "${roleName}" não encontrado.`);
+            return;
+        }
 
-        try {
-            if (roleKey && rolesMap[roleKey]) {
-                // Validação específica para a role 'admin'
-                if (roleKey === 'admin' && !member.roles.cache.some(role => role.name === ROLE_MONGA_NAME)) {
-                    await interaction.reply('Você precisa ter a role "🐵monga" para usar este comando.');
-                    return;
-                }
-                await toggleRole(interaction, target, rolesMap[roleKey]);
-            } else {
-                await interaction.reply('Cargo não reconhecido.');
-            }
-        } catch (error) {
-            console.error('Erro no comando:', error);
-            await interaction.reply('Houve um erro ao executar o comando. Tente novamente mais tarde.');
+        const embed = new EmbedBuilder().setColor('#0099ff');
+
+        if (target.roles.cache.has(role.id)) {
+            await target.roles.remove(role);
+            embed.setDescription(`❌ ${target.user.tag} teve o cargo **${roleName}** removido.`);
+        } else {
+            await target.roles.add(role);
+            embed.setDescription(`✅ ${target.user.tag} agora tem o cargo **${roleName}**.`);
+        }
+
+        await interaction.reply({ embeds: [embed] });
+
+        // Enviar log no canal específico
+        const logChannel = interaction.guild.channels.cache.get(LOG_CHANNEL_ID);
+        if (logChannel) {
+            const logEmbed = new EmbedBuilder()
+                .setTitle('Registro de Cargo')
+                .setDescription(`${interaction.user.tag} alterou o cargo de ${target.user.tag}`)
+                .addFields(
+                    { name: 'Cargo', value: roleName, inline: true },
+                    { name: 'Ação', value: target.roles.cache.has(role.id) ? 'Removido' : 'Adicionado', inline: true }
+                )
+                .setColor('#f39c12')
+                .setTimestamp();
+
+            logChannel.send({ embeds: [logEmbed] });
         }
     }
-}
-
-async function toggleRole(interaction, target, roleName) {
-    const role = interaction.guild.roles.cache.find(r => r.name === roleName);
-
-    if (!role) {
-        await interaction.reply(`Cargo "${roleName}" não encontrado.`);
-        return;
-    }
-
-    // Verifica se o usuário já tem o cargo
-    if (target.roles.cache.has(role.id)) {
-        await target.roles.remove(role);
-        await interaction.reply(`${target.user.tag} teve o cargo "${roleName}" removido.`);
-    } else {
-        await target.roles.add(role);
-        await interaction.reply(`${target.user.tag} agora tem o cargo "${roleName}".`);
-    }
-}
-
-module.exports = { handleCommand };
+};

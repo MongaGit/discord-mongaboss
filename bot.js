@@ -1,38 +1,34 @@
-﻿require('dotenv').config();
-const { Client, GatewayIntentBits } = require('discord.js');
-const { deployCommands } = require('./deployCommands');
-const { handleCommand } = require('./commands/handleCommand');
+﻿const { Client, GatewayIntentBits, Collection } = require('discord.js');
+require('dotenv').config();
+const handleCommand = require('./commands/handleCommand.js');
 
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
-    ]
+        GatewayIntentBits.GuildMembers,
+    ],
 });
 
-client.once('ready', async () => {
+client.commands = new Collection();
+
+// Inicia o bot
+client.once('ready', () => {
     console.log(`Bot iniciado como ${client.user.tag}`);
-    if (process.env.DEPLOY_COMMANDS === '1') {
-        console.log('Implantando comandos...');
-        await deployCommands();
-    }
+    client.guilds.cache.forEach(guild => {
+        console.log(`Conectado a: ${guild.name}`);
+    });
 });
 
+// Evento para interações
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
-    console.log('Interação recebida:', interaction.commandName);
-    if (interaction.guildId !== process.env.DISCORD_SERVER) {
-        await interaction.reply({ content: 'Este bot só pode ser usado no servidor específico.', ephemeral: true });
-        return;
-    }
-
     try {
-        await handleCommand(interaction);
+        await handleCommand(interaction, client);
     } catch (error) {
-        console.error('Erro ao tratar interação:', error);
-        await interaction.reply('Ocorreu um erro inesperado ao processar o comando.');
+        console.error('Erro ao processar comando:', error);
+        await interaction.reply({ content: 'Houve um erro ao executar o comando.', ephemeral: true });
     }
 });
 
