@@ -19,7 +19,7 @@ async function handleCommand(interaction) {
 
     if (commandName === 'cargo') {
         const subcommand = options.getSubcommand();
-        const roleKey = options.getString('role');
+        const roleKey = options.getString('role');  // Aqui estamos capturando o cargo solicitado
         const target = options.getMember('user') || member; // Se não especificado, aplica ao próprio usuário
 
         console.log(`Subcomando: ${subcommand}`);
@@ -27,39 +27,30 @@ async function handleCommand(interaction) {
         console.log(`Usuário alvo: ${target.user.tag}`);
 
         try {
-            switch (subcommand) {
-                case 'list':
-                    console.log('Listando cargos...');
-                    await listRoles(interaction);
-                    break;
-                case 'help':
-                    console.log('Exibindo ajuda...');
-                    await interaction.reply('Comandos disponíveis: /cargo [role], /cargo list, /cargo help');
-                    break;
-                default:
-                    if (roleKey) {
-                        console.log(`Verificando cargo: ${roleKey}`);
-                        if (rolesMap[roleKey]) {
-                            if (roleKey === 'admin' || roleKey.includes('-mod')) {
-                                // Verifica se o membro tem permissões para dar cargos admin/mod
-                                console.log('Verificando permissões do membro...');
-                                if (member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
-                                    console.log('Permissão encontrada, atribuindo cargo...');
-                                    await manageRole(interaction, target, rolesMap[roleKey], true);
-                                } else {
-                                    console.log('Permissões insuficientes.');
-                                    await interaction.reply('Você não tem permissão para usar este comando.');
-                                }
-                            } else {
-                                console.log('Atribuindo cargo...');
-                                await manageRole(interaction, target, rolesMap[roleKey], false);
-                            }
+            if (roleKey) {
+                console.log(`Cargo solicitado: ${roleKey}`);
+                if (rolesMap[roleKey]) {
+                    if (roleKey === 'admin' || roleKey.includes('-mod')) {
+                        // Verifica se o membro tem permissões para dar cargos admin/mod
+                        console.log('Verificando permissões do membro...');
+                        if (member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
+                            console.log('Permissão encontrada, atribuindo cargo...');
+                            await manageRole(interaction, target, rolesMap[roleKey], true);
                         } else {
-                            console.log('Cargo não reconhecido.');
-                            await interaction.reply('Cargo não reconhecido.');
+                            console.log('Permissões insuficientes.');
+                            await interaction.reply('Você não tem permissão para usar este comando.');
                         }
+                    } else {
+                        console.log('Atribuindo cargo...');
+                        await manageRole(interaction, target, rolesMap[roleKey], false);
                     }
-                    break;
+                } else {
+                    console.log('Cargo não reconhecido.');
+                    await interaction.reply('Cargo não reconhecido.');
+                }
+            } else {
+                console.log('Nenhum cargo fornecido!');
+                await interaction.reply('Por favor, forneça um cargo válido.');
             }
         } catch (error) {
             console.error('Erro no comando:', error);
@@ -67,6 +58,7 @@ async function handleCommand(interaction) {
         }
     }
 }
+
 
 async function manageRole(interaction, target, roleName, temporary) {
     console.log(`Tentando atribuir o cargo: ${roleName} ao usuário: ${target.user.tag}`);
