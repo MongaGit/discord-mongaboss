@@ -36,7 +36,7 @@ const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
 (async () => {
     try {
         await rest.put(
-            Routes.applicationGuildCommands(process.env.DISCORD_SERVER, process.env.DISCORD_TOKEN),
+            Routes.applicationGuildCommands(process.env.DISCORD_TOKEN, process.env.DISCORD_SERVER),
             { body: commands },
         );
 
@@ -45,3 +45,6 @@ const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
         console.error(error);
     }
 })();
+
+module.exports = { deployCommands };
+
