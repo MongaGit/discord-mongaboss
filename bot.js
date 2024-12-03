@@ -20,11 +20,18 @@ client.once('ready', async () => {
 
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
+
     if (interaction.guildId !== process.env.DISCORD_SERVER) {
         await interaction.reply({ content: 'Este bot só pode ser usado no servidor específico.', ephemeral: true });
         return;
     }
-    handleCommand(interaction);
+
+    try {
+        await handleCommand(interaction);
+    } catch (error) {
+        console.error('Erro ao tratar interação:', error);
+        await interaction.reply('Ocorreu um erro inesperado ao processar o comando.');
+    }
 });
 
 client.login(process.env.DISCORD_TOKEN);
