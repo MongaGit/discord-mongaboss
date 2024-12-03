@@ -18,7 +18,7 @@ async function handleCommand(interaction) {
     if (commandName === 'cargo') {
         const subcommand = options.getSubcommand();
         const roleKey = options.getString('role');
-        const target = options.getMember('user') || member; // se nenhum usuário é especificado, o comando aplica ao próprio usuário  
+        const target = options.getMember('user') || member; // se nenhum usuário é especificado, o comando aplica ao próprio usuário
 
         switch (subcommand) {
             case 'list':
@@ -56,7 +56,7 @@ async function manageRole(interaction, target, roleName, temporary) {
     }
 
     if (temporary && roleName === process.env.ROLE_ADMIN) {
-        // Aplica o cargo temporariamente  
+        // Aplica o cargo temporariamente
         await target.roles.add(role);
         await interaction.reply(`${target.user.tag} agora tem o cargo ${roleName} por ${process.env.TIME_ROLE} minutos.`);
         setTimeout(async () => {
@@ -64,7 +64,7 @@ async function manageRole(interaction, target, roleName, temporary) {
             interaction.followUp(`${target.user.tag} teve o cargo ${roleName} removido após ${process.env.TIME_ROLE} minutos.`);
         }, parseInt(process.env.TIME_ROLE) * 60000);
     } else {
-        // Aplica o cargo permanentemente  
+        // Aplica o cargo permanentemente
         await target.roles.add(role);
         await interaction.reply(`${target.user.tag} agora tem o cargo ${roleName}.`);
     }

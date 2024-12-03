@@ -40,7 +40,6 @@ async function deployCommands() {
             Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID, process.env.DISCORD_SERVER),
             { body: commands },
         );
-
         console.log('Comandos (/) implantados com sucesso!');
     } catch (error) {
         console.error('Erro ao implantar comandos:', error);
