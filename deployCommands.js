@@ -33,7 +33,8 @@ const commands = [
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
 
-(async () => {
+// Função deployCommands encapsulada corretamente
+async function deployCommands() {
     try {
         await rest.put(
             Routes.applicationGuildCommands(process.env.DISCORD_TOKEN, process.env.DISCORD_SERVER),
@@ -42,9 +43,8 @@ const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
 
         console.log('Comandos (/) implantados com sucesso!');
     } catch (error) {
-        console.error(error);
+        console.error('Erro ao implantar comandos:', error);
     }
-})();
+}
 
 module.exports = { deployCommands };
-
