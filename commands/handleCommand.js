@@ -19,15 +19,22 @@ module.exports = async (interaction, client) => {
         const target = interaction.options.getMember('usuario');
         const roleName = interaction.options.getString('cargo');
 
+        // Log para depuração
+        console.log(`Comando recebido para adicionar/remover o cargo: ${roleName}`);
+
         // Verifica se o cargo existe no rolesMap
         if (!rolesMap[roleName]) {
             await interaction.reply('Cargo não encontrado.');
             return;
         }
 
-        const role = interaction.guild.roles.cache.find(r => r.name === rolesMap[roleName]);
+        const roleNameMapped = rolesMap[roleName];
+        console.log(`Role mapeada encontrada: ${roleNameMapped}`);
+
+        // Verifica se a role existe no servidor
+        const role = interaction.guild.roles.cache.find(r => r.name === roleNameMapped);
         if (!role) {
-            await interaction.reply(`Cargo "${rolesMap[roleName]}" não encontrado.`);
+            await interaction.reply(`Cargo "${roleNameMapped}" não encontrado.`);
             return;
         }
 
@@ -52,10 +59,10 @@ module.exports = async (interaction, client) => {
         // Lógica de adicionar/remover cargo
         if (target.roles.cache.has(role.id)) {
             await target.roles.remove(role);
-            await interaction.reply(`${target.user.tag} teve o cargo **${roleName}** removido.`);
+            await interaction.reply(`${target.user.tag} teve o cargo **${roleNameMapped}** removido.`);
         } else {
             await target.roles.add(role);
-            await interaction.reply(`${target.user.tag} agora tem o cargo **${roleName}**.`);
+            await interaction.reply(`${target.user.tag} agora tem o cargo **${roleNameMapped}**.`);
         }
 
         // Enviar log no canal específico
@@ -65,7 +72,7 @@ module.exports = async (interaction, client) => {
                 .setTitle('Registro de Cargo')
                 .setDescription(`${interaction.user.tag} alterou o cargo de ${target.user.tag}`)
                 .addFields(
-                    { name: 'Cargo', value: roleName, inline: true },
+                    { name: 'Cargo', value: roleNameMapped, inline: true },
                     { name: 'Ação', value: target.roles.cache.has(role.id) ? 'Removido' : 'Adicionado', inline: true }
                 )
                 .setColor('#f39c12')
