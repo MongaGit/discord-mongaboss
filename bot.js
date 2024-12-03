@@ -20,16 +20,15 @@ client.once('ready', async () => {
 });
 
 client.on('interactionCreate', async interaction => {
-    console.log('Interação recebida:', interaction.commandName);
     if (!interaction.isCommand()) return;
 
+    console.log('Interação recebida:', interaction.commandName);
     if (interaction.guildId !== process.env.DISCORD_SERVER) {
         await interaction.reply({ content: 'Este bot só pode ser usado no servidor específico.', ephemeral: true });
         return;
     }
 
     try {
-        console.log(`Tratando interação do comando: ${interaction.commandName}`);
         await handleCommand(interaction);
     } catch (error) {
         console.error('Erro ao tratar interação:', error);

@@ -8,12 +8,6 @@ const commands = [
         .setName('cargo')
         .setDescription('Gerencia cargos no servidor')
         .addSubcommand(subcommand =>
-            subcommand.setName('list')
-                .setDescription('Lista todos os usuários com cargos específicos'))
-        .addSubcommand(subcommand =>
-            subcommand.setName('help')
-                .setDescription('Exibe informações de ajuda sobre os comandos disponíveis'))
-        .addSubcommand(subcommand =>
             subcommand.setName('rpg')
                 .setDescription('Atribui a role RPG ao usuário')
                 .addUserOption(option => option.setName('user').setDescription('O usuário para atribuir o cargo').setRequired(false)))
@@ -33,7 +27,6 @@ const commands = [
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
 
-// Função deployCommands corrigida para usar o DISCORD_CLIENT_ID corretamente
 async function deployCommands() {
     try {
         await rest.put(
