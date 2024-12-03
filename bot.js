@@ -12,13 +12,15 @@ const client = new Client({
 });
 
 client.once('ready', async () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+    console.log(`Bot iniciado como ${client.user.tag}`);
     if (process.env.DEPLOY_COMMANDS === '1') {
+        console.log('Implantando comandos...');
         await deployCommands();
     }
 });
 
 client.on('interactionCreate', async interaction => {
+    console.log('Interação recebida:', interaction.commandName);
     if (!interaction.isCommand()) return;
 
     if (interaction.guildId !== process.env.DISCORD_SERVER) {
@@ -27,6 +29,7 @@ client.on('interactionCreate', async interaction => {
     }
 
     try {
+        console.log(`Tratando interação do comando: ${interaction.commandName}`);
         await handleCommand(interaction);
     } catch (error) {
         console.error('Erro ao tratar interação:', error);
