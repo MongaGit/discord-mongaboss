@@ -33,11 +33,11 @@ const commands = [
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
 
-// Função deployCommands encapsulada corretamente
+// Função deployCommands corrigida para usar o DISCORD_CLIENT_ID corretamente
 async function deployCommands() {
     try {
         await rest.put(
-            Routes.applicationGuildCommands(process.env.DISCORD_TOKEN, process.env.DISCORD_SERVER),
+            Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID, process.env.DISCORD_SERVER),
             { body: commands },
         );
 
