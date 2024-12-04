@@ -36,7 +36,7 @@ async function handleCommand(interaction) {
             }
 
             if (roleKey && rolesMap[roleKey]) {
-                // Validação para a role 'admin'
+                // Comando para a role 'admin' com temporizador
                 if (roleKey === 'admin') {
                     if (!member.roles.cache.some(role => role.name === ROLE_MONGA_NAME)) {
                         await interaction.reply('Você precisa ter a role "🐵monga" para usar este comando.');
@@ -65,6 +65,33 @@ async function handleCommand(interaction) {
 
                         // Envia log
                         await sendAuditLog(interaction.client, `${target.user.tag} recebeu o cargo **Administrador**. Cargo será removido após ${TIME_ROLE} segundos.`);
+                    }
+                }
+
+                // Comandos para as roles simples e moderadoras (sem temporizador)
+                else {
+                    const role = interaction.guild.roles.cache.find(r => r.name === rolesMap[roleKey]);
+
+                    // Verifica se o usuário tem permissão para adicionar/modificar o cargo
+                    if (roleKey.includes('-mod') && !member.roles.cache.some(r => r.name === ROLE_MONGA_NAME)) {
+                        await interaction.reply(`Você precisa ter a role "${ROLE_MONGA_NAME}" para usar este comando.`);
+                        return;
+                    }
+
+                    if (role) {
+                        if (target.roles.cache.has(role.id)) {
+                            await target.roles.remove(role);
+                            await interaction.reply({ embeds: [new EmbedBuilder().setColor('#FF0000').setDescription(`❌ ${target.user.tag} teve o cargo **${role.name}** removido.`)] });
+                            console.log(`${target.user.tag} já tinha o cargo '${role.name}'. Cargo removido.`);
+                        } else {
+                            await target.roles.add(role);
+                            await interaction.reply({ embeds: [new EmbedBuilder().setColor('#00FF00').setDescription(`✅ ${target.user.tag} agora tem o cargo **${role.name}**.`)] });
+
+                            // Envia log
+                            await sendAuditLog(interaction.client, `${target.user.tag} recebeu o cargo **${role.name}**.`);
+                        }
+                    } else {
+                        await interaction.reply('Cargo não reconhecido.');
                     }
                 }
             } else {
