@@ -55,7 +55,7 @@ async function handleCommand(interaction) {
                         console.log(`${target.user.tag} já tinha o cargo 'Administrador'. Cargo removido.`);
 
                         // Envia log
-                        await sendAuditLog(`${target.user.tag} teve o cargo **Administrador** removido imediatamente.`);
+                        await sendAuditLog(interaction.client, `${target.user.tag} teve o cargo **Administrador** removido imediatamente.`);
                     } else {
                         await target.roles.add(adminRole);
                         await interaction.reply({ embeds: [new EmbedBuilder().setColor('#00FF00').setDescription(`✅ ${target.user.tag} agora tem o cargo **Administrador**.`)] });
@@ -64,7 +64,7 @@ async function handleCommand(interaction) {
                         await setRoleTimeout(interaction, target, adminRole, TIME_ROLE);
 
                         // Envia log
-                        await sendAuditLog(`${target.user.tag} recebeu o cargo **Administrador**. Cargo será removido após ${TIME_ROLE} segundos.`);
+                        await sendAuditLog(interaction.client, `${target.user.tag} recebeu o cargo **Administrador**. Cargo será removido após ${TIME_ROLE} segundos.`);
                     }
                 }
             } else {
@@ -90,7 +90,7 @@ async function setRoleTimeout(interaction, target, role, timeInSeconds) {
             await interaction.followUp({ embeds: [new EmbedBuilder().setColor('#FFCC00').setDescription(`🔔 O cargo **${role.name}** foi removido de ${target.user.tag} após ${timeInSeconds} segundos.`)] });
 
             // Envia log
-            await sendAuditLog(`O cargo **${role.name}** foi removido de ${target.user.tag} após ${timeInSeconds} segundos.`);
+            await sendAuditLog(interaction.client, `O cargo **${role.name}** foi removido de ${target.user.tag} após ${timeInSeconds} segundos.`);
 
         } catch (error) {
             console.error('Erro ao tentar remover o cargo:', error);
