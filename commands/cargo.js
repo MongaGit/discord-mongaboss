@@ -2,9 +2,10 @@ const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 const { sendAuditLog } = require('../utils/auditLog');  // Importando a função sendAuditLog
 
 // Variáveis de ambiente
-const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || '1097557088818954250';
+//const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || '1097557088818954250';
 const ROLE_MONGA_NAME = process.env.ROLE_MONGA_NAME || '🐵monga';
-const TIME_ROLE = parseInt(process.env.TIME_ROLE) || 10; // Tempo em segundos
+const TIME_ROLE = parseInt(process.env.TIME_ROLE) || 1440;
+
 
 const rolesMap = {
     'rpg': '🎲rpg',

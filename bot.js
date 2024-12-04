@@ -1,8 +1,7 @@
-﻿const { Client, GatewayIntentBits } = require('discord.js');
+﻿require('dotenv').config();
+const { Client, GatewayIntentBits } = require('discord.js');
 const { handleCommand } = require('./commands/cargo');
-require('dotenv').config();
 const { deployCommands } = require('./deployCommands');
-
 
 const client = new Client({
     intents: [
@@ -27,7 +26,6 @@ client.once('ready', () => {
 
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
-
     // Chama o handler do comando de cargo
     await handleCommand(interaction);
 });

@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || '1097557088818954250';
 
 async function sendAuditLog(client, message) {
     const channel = await client.channels.fetch(process.env.LOG_CHANNEL_ID);
