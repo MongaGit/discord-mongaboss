@@ -93,24 +93,38 @@ async function toggleRole(interaction, target, roleName) {
 async function setRoleTimeout(interaction, target, roleName) {
     const role = interaction.guild.roles.cache.find(r => r.name === roleName);
 
+    // Log para verificar se a role foi encontrada
     if (!role) {
         console.error(`Role "${roleName}" não encontrada.`);
         return;
     }
 
-    // Log para verificar a execução da função
+    // Log para verificar se o target (usuário) foi encontrado
     console.log(`Iniciando o temporizador para remover a role "${roleName}" após ${TIME_ROLE} segundos`);
+
+    // Verifica se o usuário tem o cargo antes de iniciar o temporizador
+    if (!target.roles.cache.has(role.id)) {
+        console.log(`${target.user.tag} já não tem a role "${roleName}".`);
+        return;
+    }
 
     // Configura um temporizador para remover o cargo após TIME_ROLE segundos
     setTimeout(async () => {
-        // Remove o cargo após o tempo definido
-        if (target.roles.cache.has(role.id)) {
-            await target.roles.remove(role);
-            console.log(`Cargo "${roleName}" removido após ${TIME_ROLE} segundos.`);
-            await interaction.followUp({ embeds: [new EmbedBuilder().setColor('#FFCC00').setDescription(`🔔 O cargo **${roleName}** foi removido após ${TIME_ROLE} segundos.`)] });
+        try {
+            // Verifica se o usuário ainda tem o cargo e remove
+            if (target.roles.cache.has(role.id)) {
+                await target.roles.remove(role);
+                console.log(`Cargo "${roleName}" removido após ${TIME_ROLE} segundos.`);
+                await interaction.followUp({ embeds: [new EmbedBuilder().setColor('#FFCC00').setDescription(`🔔 O cargo **${roleName}** foi removido após ${TIME_ROLE} segundos.`)] });
+            } else {
+                console.log(`${target.user.tag} já não tem mais o cargo "${roleName}"`);
+            }
+        } catch (error) {
+            console.error('Erro ao tentar remover o cargo:', error);
         }
     }, TIME_ROLE * 1000); // Converte o tempo de segundos para milissegundos
 }
+
 
 async function sendAuditLog(interaction, target, roleKey) {
     const embed = new EmbedBuilder()
