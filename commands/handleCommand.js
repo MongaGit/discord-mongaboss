@@ -3,7 +3,9 @@
 // Variáveis de ambiente
 const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || '1097557088818954250';
 const ROLE_MONGA_NAME = process.env.ROLE_MONGA_NAME || '🐵monga';
-const TIME_ROLE = parseInt(process.env.TIME_ROLE) || 1440; // Tempo em segundos (1440 = 24 horas)
+const TIME_ROLE = parseInt(process.env.TIME_ROLE) || 14; // Tempo em segundos (1440 = 24 horas)
+
+console.log(`Tempo para a role "admin": ${TIME_ROLE} segundos`); // Log de depuração para verificar o valor de TIME_ROLE
 
 const rolesMap = {
     'rpg': '🎲rpg',
@@ -96,12 +98,16 @@ async function setRoleTimeout(interaction, target, roleName) {
         return;
     }
 
+    // Log para verificar a execução da função
+    console.log(`Iniciando o temporizador para remover a role "${roleName}" após ${TIME_ROLE} segundos`);
+
     // Configura um temporizador para remover o cargo após TIME_ROLE segundos
     setTimeout(async () => {
         // Remove o cargo após o tempo definido
         if (target.roles.cache.has(role.id)) {
             await target.roles.remove(role);
-            await interaction.followUp({ embeds: [new EmbedBuilder().setColor('#FFCC00').setDescription(`🔔 O cargo **${roleName}** foi removido após 24 horas.`)] });
+            console.log(`Cargo "${roleName}" removido após ${TIME_ROLE} segundos.`);
+            await interaction.followUp({ embeds: [new EmbedBuilder().setColor('#FFCC00').setDescription(`🔔 O cargo **${roleName}** foi removido após ${TIME_ROLE} segundos.`)] });
         }
     }, TIME_ROLE * 1000); // Converte o tempo de segundos para milissegundos
 }
