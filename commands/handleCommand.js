@@ -3,7 +3,7 @@
 // Variáveis de ambiente
 const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || '1097557088818954250';
 const ROLE_MONGA_NAME = process.env.ROLE_MONGA_NAME || '🐵monga';
-const TIME_ROLE = parseInt(process.env.TIME_ROLE) || 10; // Tempo em segundos
+const TIME_ROLE = parseInt(process.env.TIME_ROLE) || 30; // Tempo em segundos
 
 const rolesMap = {
     'rpg': '🎲rpg',
@@ -82,7 +82,7 @@ async function setRoleTimeout(interaction, target, role, timeInSeconds) {
 
     setTimeout(async () => {
         try {
-            // Garantir que estamos pegando os dados atualizados do membro
+            // Aguarda para garantir que o cache de roles esteja atualizado
             const member = await interaction.guild.members.fetch(target.id);
 
             // Verifica se o membro ainda possui a role antes de tentar removê-la
