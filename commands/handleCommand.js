@@ -3,7 +3,7 @@
 // Variáveis de ambiente
 const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || '1097557088818954250';
 const ROLE_MONGA_NAME = process.env.ROLE_MONGA_NAME || '🐵monga';
-const TIME_ROLE = parseInt(process.env.TIME_ROLE) || 14; // Tempo em segundos
+const TIME_ROLE = parseInt(process.env.TIME_ROLE) || 10; // Tempo em segundos
 
 const rolesMap = {
     'rpg': '🎲rpg',
@@ -54,12 +54,14 @@ async function handleCommand(interaction) {
                         // Caso o usuário já tenha a role 'Administrador', remove a role imediatamente
                         await target.roles.remove(adminRole);
                         await interaction.reply({ embeds: [new EmbedBuilder().setColor('#FF0000').setDescription(`❌ ${target.user.tag} teve o cargo **Administrador** removido.`)] });
+                        console.log(`${target.user.tag} já tinha o cargo 'Administrador'. Cargo removido imediatamente.`);
                     } else {
                         // Caso o usuário não tenha a role, adiciona e inicia o temporizador para remoção
                         await target.roles.add(adminRole);
                         await interaction.reply({ embeds: [new EmbedBuilder().setColor('#00FF00').setDescription(`✅ ${target.user.tag} agora tem o cargo **Administrador**.`)] });
 
                         // Inicia o temporizador para remover a role após TIME_ROLE segundos
+                        console.log(`Iniciando o temporizador para remover o cargo 'Administrador' de ${target.user.tag} após ${TIME_ROLE} segundos.`);
                         await setRoleTimeout(interaction, target, adminRole, TIME_ROLE);
                     }
                 }
@@ -76,16 +78,17 @@ async function handleCommand(interaction) {
 }
 
 async function setRoleTimeout(interaction, target, role, timeInSeconds) {
-    console.log(`Iniciando o temporizador para remover a role "${role.name}" após ${timeInSeconds} segundos`);
+    console.log(`Temporizador iniciado para remover o cargo "${role.name}" de ${target.user.tag} após ${timeInSeconds} segundos.`);
 
     setTimeout(async () => {
         try {
+            // Verifica se o membro ainda possui a role antes de tentar removê-la
             if (target.roles.cache.has(role.id)) {
                 await target.roles.remove(role);
-                console.log(`Cargo "${role.name}" removido após ${timeInSeconds} segundos.`);
-                await interaction.followUp({ embeds: [new EmbedBuilder().setColor('#FFCC00').setDescription(`🔔 O cargo **${role.name}** foi removido após ${timeInSeconds} segundos.`)] });
+                console.log(`Cargo "${role.name}" removido de ${target.user.tag} após ${timeInSeconds} segundos.`);
+                await interaction.followUp({ embeds: [new EmbedBuilder().setColor('#FFCC00').setDescription(`🔔 O cargo **${role.name}** foi removido de ${target.user.tag} após ${timeInSeconds} segundos.`)] });
             } else {
-                console.log(`${target.user.tag} não possui mais a role "${role.name}".`);
+                console.log(`${target.user.tag} não possui mais a role "${role.name}" antes de remover.`);
             }
         } catch (error) {
             console.error('Erro ao tentar remover o cargo:', error);
