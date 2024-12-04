@@ -83,7 +83,7 @@ async function setRoleTimeout(interaction, target, role, timeInSeconds) {
     setTimeout(async () => {
         try {
             // Verifica se o membro ainda possui a role antes de tentar removê-la
-            const member = await interaction.guild.members.fetch(target.id);
+            const member = await interaction.guild.members.fetch(target.id); // Garante que estamos pegando os dados atualizados
             if (member.roles.cache.has(role.id)) {
                 await member.roles.remove(role);
                 console.log(`Cargo "${role.name}" removido de ${target.user.tag} após ${timeInSeconds} segundos.`);
