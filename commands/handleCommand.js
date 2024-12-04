@@ -85,18 +85,16 @@ async function setRoleTimeout(interaction, target, role, timeInSeconds) {
             // Aguarda para garantir que o cache de roles esteja atualizado
             const member = await interaction.guild.members.fetch(target.id);
 
-            // Verifica se o membro ainda possui a role antes de tentar removê-la
-            if (member.roles.cache.has(role.id)) {
-                await member.roles.remove(role);
-                console.log(`Cargo "${role.name}" removido de ${target.user.tag} após ${timeInSeconds} segundos.`);
-                await interaction.followUp({ embeds: [new EmbedBuilder().setColor('#FFCC00').setDescription(`🔔 O cargo **${role.name}** foi removido de ${target.user.tag} após ${timeInSeconds} segundos.`)] });
-            } else {
-                console.log(`${target.user.tag} não possui mais a role "${role.name}" antes de remover.`);
-            }
+            // Remove diretamente a role 'Administrador', sem verificação adicional
+            await member.roles.remove(role);
+            console.log(`Cargo "${role.name}" removido de ${target.user.tag} após ${timeInSeconds} segundos.`);
+            await interaction.followUp({ embeds: [new EmbedBuilder().setColor('#FFCC00').setDescription(`🔔 O cargo **${role.name}** foi removido de ${target.user.tag} após ${timeInSeconds} segundos.`)] });
+
         } catch (error) {
             console.error('Erro ao tentar remover o cargo:', error);
         }
     }, timeInSeconds * 1000); // Converte o tempo de segundos para milissegundos
 }
+
 
 module.exports = { handleCommand };
