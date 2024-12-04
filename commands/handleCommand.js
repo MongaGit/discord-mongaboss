@@ -100,3 +100,4 @@ async function setRoleTimeout(interaction, target, role, timeInSeconds) {
 }
 
 module.exports = { handleCommand };
+
