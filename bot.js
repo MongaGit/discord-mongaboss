@@ -1,7 +1,7 @@
 ﻿require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const { handleCommand } = require('./commands/cargo');
-const { deployCommands } = require('./deployCommands');
+const { deployCommands } = require('./utils/deployCommands');
 
 const client = new Client({
     intents: [
