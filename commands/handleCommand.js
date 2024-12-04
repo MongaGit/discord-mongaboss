@@ -7,10 +7,12 @@ const ROLE_MONGA_NAME = process.env.ROLE_MONGA_NAME || '🐵monga';
 const rolesMap = {
     'rpg': '🎲rpg',
     'game': '🎮game',
-    'dev-art': '🖌️dev-art',
-    'rpg-mod': '🎲rpg-mod',
-    'game-mod': '🎮game-mod',
-    'dev-art-mod': '🖌️dev-art-mod',
+    'art': '🖌️art',
+    'skynet': '🧊skynet',
+    'rpgmod': '🎲rpg-mod',
+    'gamemod': '🎮game-mod',
+    'artmod': '🖌️art-mod',
+    'skynetmod': '🧊skynet-mod',
     'admin': 'Administrador'
 };
 
