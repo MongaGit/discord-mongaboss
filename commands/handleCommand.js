@@ -3,7 +3,7 @@
 // Variáveis de ambiente
 const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || '1097557088818954250';
 const ROLE_MONGA_NAME = process.env.ROLE_MONGA_NAME || '🐵monga';
-const TIME_ROLE = parseInt(process.env.TIME_ROLE) || 10; // Tempo em segundos
+const TIME_ROLE = parseInt(process.env.TIME_ROLE) || 1440; // Tempo em segundos
 
 const rolesMap = {
     'rpg': '🎲rpg',
@@ -83,8 +83,9 @@ async function setRoleTimeout(interaction, target, role, timeInSeconds) {
     setTimeout(async () => {
         try {
             // Verifica se o membro ainda possui a role antes de tentar removê-la
-            if (target.roles.cache.has(role.id)) {
-                await target.roles.remove(role);
+            const member = await interaction.guild.members.fetch(target.id);
+            if (member.roles.cache.has(role.id)) {
+                await member.roles.remove(role);
                 console.log(`Cargo "${role.name}" removido de ${target.user.tag} após ${timeInSeconds} segundos.`);
                 await interaction.followUp({ embeds: [new EmbedBuilder().setColor('#FFCC00').setDescription(`🔔 O cargo **${role.name}** foi removido de ${target.user.tag} após ${timeInSeconds} segundos.`)] });
             } else {
