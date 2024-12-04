@@ -1,4 +1,20 @@
 ﻿
+# Docker Compose
+```bash
+docker run -d \
+  -e DISCORD_TOKEN='seu_token_aqui'
+  -e DISCORD_CLIENT_ID='seu_client_id_aqui' \
+  -e DISCORD_SERVER='seu_server_id_aqui' \
+  -e LOG_CHANNEL_ID=1097557088818954250 \
+  -e ROLE_MONGA_NAME=🐵monga \
+  -e ROLE_ADMIN=Administrador \
+  -e TIME_ROLE=1440
+  -e DEPLOY_COMMANDS=1 \
+  --name mongaboss lorthe/discord-mongaboss:latest
+````
+
+
+
 ````bot.js
 require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
@@ -154,57 +170,3 @@ module.exports = { handleCommand };
 ````
 
 
-
-
-
-
-O projeto está funcionando tudo corretamente assim. Analise os tres arquivos principais do projeto, bot.js, deployCommands.js e commands/handleCommand.js.
-Aquero realizar algumas implementações:
-
-1. Log de Auditoria
-Adicionar um log de auditoria para registrar quem concedeu ou removeu roles. Isso pode ser útil para monitorar as ações administrativas no servidor. vamos usar o .env para a variável LOG_CHANNEL_ID para armazenar o ID do canal de log.
-
-2. Tratamento de Permissões
-Verificar se o bot tem permissões suficientes para adicionar ou remover roles. Isso evita erros caso o bot não tenha a permissão necessária.
-```exemplo
-if (!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageRoles)) {
-    await interaction.reply('Eu não tenho permissão para gerenciar cargos. Verifique as minhas permissões.');
-    return;
-}
-```
-3. Feedback Visual
-Melhorar as mensagens enviadas ao usuário usando embeds para um visual mais atraente.
-```exemplo
-const { EmbedBuilder } = require('discord.js');
-
-async function toggleRole(interaction, target, roleName) {
-    const role = interaction.guild.roles.cache.find(r => r.name === roleName);
-
-    if (!role) {
-        await interaction.reply(`Cargo "${roleName}" não encontrado.`);
-        return;
-    }
-
-    const embed = new EmbedBuilder().setColor('#0099ff');
-
-    if (target.roles.cache.has(role.id)) {
-        await target.roles.remove(role);
-        embed.setDescription(`❌ ${target.user.tag} teve o cargo **${roleName}** removido.`);
-    } else {
-        await target.roles.add(role);
-        embed.setDescription(`✅ ${target.user.tag} agora tem o cargo **${roleName}**.`);
-    }
-
-    await interaction.reply({ embeds: [embed] });
-}
-```
-5. Erro de Role Não Encontrada
-Pode ser útil tratar o caso em que a role '🐵monga' não existe no servidor:
-
-````exemplo
-const mongaRole = interaction.guild.roles.cache.find(r => r.name === ROLE_MONGA_NAME);
-if (!mongaRole) {
-    await interaction.reply(`A role "${ROLE_MONGA_NAME}" não foi encontrada. Verifique a configuração do servidor.`);
-    return;
-}
-````
