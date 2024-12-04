@@ -3,6 +3,7 @@
 // Variáveis de ambiente
 const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || '1097557088818954250';
 const ROLE_MONGA_NAME = process.env.ROLE_MONGA_NAME || '🐵monga';
+const TIME_ROLE = parseInt(process.env.TIME_ROLE) || 1440; // Tempo em segundos (1440 = 24 horas)
 
 const rolesMap = {
     'rpg': '🎲rpg',
@@ -52,6 +53,11 @@ async function handleCommand(interaction) {
 
                 // Envia log de auditoria
                 await sendAuditLog(interaction, target, roleKey);
+
+                // Se a role for 'admin', define um temporizador para removê-la
+                if (roleKey === 'admin') {
+                    await setRoleTimeout(interaction, target, rolesMap[roleKey]);
+                }
             } else {
                 await interaction.reply('Cargo não reconhecido.');
             }
@@ -80,6 +86,24 @@ async function toggleRole(interaction, target, roleName) {
         await target.roles.add(role);
         await interaction.reply({ embeds: [new EmbedBuilder().setColor('#00FF00').setDescription(`✅ ${target.user.tag} agora tem o cargo **${roleName}**.`)] });
     }
+}
+
+async function setRoleTimeout(interaction, target, roleName) {
+    const role = interaction.guild.roles.cache.find(r => r.name === roleName);
+
+    if (!role) {
+        console.error(`Role "${roleName}" não encontrada.`);
+        return;
+    }
+
+    // Configura um temporizador para remover o cargo após TIME_ROLE segundos
+    setTimeout(async () => {
+        // Remove o cargo após o tempo definido
+        if (target.roles.cache.has(role.id)) {
+            await target.roles.remove(role);
+            await interaction.followUp({ embeds: [new EmbedBuilder().setColor('#FFCC00').setDescription(`🔔 O cargo **${roleName}** foi removido após 24 horas.`)] });
+        }
+    }, TIME_ROLE * 1000); // Converte o tempo de segundos para milissegundos
 }
 
 async function sendAuditLog(interaction, target, roleKey) {
