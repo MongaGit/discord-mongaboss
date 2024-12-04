@@ -1,8 +1,6 @@
-# Node projects
-node_modules/
-npm-debug.log
-# Logs
-logs
-*.log
-npm-debug.log*
-.env
+﻿node_modules/  
+npm-debug.log  
+logs  
+*.log  
+npm-debug.log*  
+.env  
