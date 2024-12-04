@@ -2,13 +2,13 @@
 # Docker Compose
 ```bash
 docker run -d \
-  -e DISCORD_TOKEN='seu_token_aqui'
-  -e DISCORD_CLIENT_ID='seu_client_id_aqui' \
-  -e DISCORD_SERVER='seu_server_id_aqui' \
+  -e DISCORD_TOKEN=****** \
+  -e DISCORD_CLIENT_ID=****** \
+  -e DISCORD_SERVER=****** \
   -e LOG_CHANNEL_ID=1097557088818954250 \
   -e ROLE_MONGA_NAME=🐵monga \
   -e ROLE_ADMIN=Administrador \
-  -e TIME_ROLE=1440
+  -e TIME_ROLE=1440 \
   -e DEPLOY_COMMANDS=1 \
   --name mongaboss lorthe/discord-mongaboss:latest
 ````
