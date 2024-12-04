@@ -9,10 +9,10 @@ const rolesMap = {
     'game': '🎮game',
     'art': '🖌️art',
     'skynet': '🧊skynet',
-    'rpgmod': '🎲rpg-mod',
-    'gamemod': '🎮game-mod',
-    'artmod': '🖌️art-mod',
-    'skynetmod': '🧊skynet-mod',
+    'rpg-mod': '🎲rpg-mod',
+    'game-mod': '🎮game-mod',
+    'art-mod': '🖌️art-mod',
+    'skynet-mod': '🧊skynet-mod',
     'admin': 'Administrador'
 };
 
