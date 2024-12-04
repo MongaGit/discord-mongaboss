@@ -1,4 +1,5 @@
 ﻿const { PermissionsBitField, EmbedBuilder } = require('discord.js');
+const { sendAuditLog } = require('../bot'); // Importa a função sendAuditLog de bot.js
 
 // Variáveis de ambiente
 const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || '1097557088818954250';

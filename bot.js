@@ -51,5 +51,6 @@ async function sendAuditLog(content) {
     }
 }
 
-
 client.login(process.env.DISCORD_TOKEN);
+
+module.exports.sendAuditLog = sendAuditLog; 
