@@ -1,96 +1,59 @@
-﻿const { EmbedBuilder, PermissionsBitField } = require('discord.js');
-require('dotenv').config();
+﻿const { PermissionsBitField } = require('discord.js');
 
-const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || '123456789012345678';
-const ROLE_MONGA_NAME = process.env.ROLE_MONGA_NAME || '🐵monga';
+// Role fixa '🐵monga' para verificação
+const ROLE_MONGA_NAME = '🐵monga';
 
 const rolesMap = {
     'rpg': '🎲rpg',
     'game': '🎮game',
     'dev-art': '🖌️dev-art',
-    'rpg-mod': '🎲rpg-mod',
-    'game-mod': '🎮game-mod',
-    'dev-art-mod': '🖌️dev-art-mod',
-    'admin': process.env.ROLE_ADMIN
+    'admin': 'Administrador'  // Role que será concedida/removida
 };
 
-module.exports = async (interaction, client) => {
-    if (interaction.commandName === 'cargo') {
-        // Log para verificar o que é recebido no comando
-        console.log(`Comando '/cargo' recebido: ${JSON.stringify(interaction.options.data)}`);
+async function handleCommand(interaction) {
+    if (!interaction.isCommand()) return;
 
-        const target = interaction.options.getMember('usuario');
-        const roleName = interaction.options.getString('cargo');
+    const { commandName, options, member } = interaction;
 
-        // Log para depuração: Verificar se o cargo foi capturado corretamente
-        console.log(`Comando recebido para adicionar/remover o cargo: ${roleName}`);
+    if (commandName === 'cargo') {
+        const subcommand = options.getSubcommand();
+        const roleKey = subcommand;
+        const target = options.getMember('user') || member;
 
-        // Verifica se o nome do cargo foi passado corretamente
-        if (!roleName) {
-            await interaction.reply('Você precisa especificar um cargo.');
-            return;
-        }
-
-        // Verifica se o cargo existe no rolesMap
-        if (!rolesMap[roleName]) {
-            await interaction.reply('Cargo não encontrado.');
-            console.log(`Cargo não encontrado no mapa: ${roleName}`);
-            return;
-        }
-
-        const roleNameMapped = rolesMap[roleName];
-        console.log(`Role mapeada encontrada: ${roleNameMapped}`);
-
-        // Verifica se a role existe no servidor
-        const role = interaction.guild.roles.cache.find(r => r.name === roleNameMapped);
-        if (!role) {
-            await interaction.reply(`Cargo "${roleNameMapped}" não encontrado no servidor.`);
-            console.log(`Cargo não encontrado no servidor: ${roleNameMapped}`);
-            return;
-        }
-
-        // Verifica se a role é restrita (admin ou termina com -mod)
-        const isRestrictedRole = roleName === 'admin' || roleName.toLowerCase().endsWith('-mod');
-
-        // Se for uma role restrita, verifica se o usuário tem a role monga
-        if (isRestrictedRole) {
-            const mongaRole = interaction.guild.roles.cache.find(r => r.name === ROLE_MONGA_NAME);
-            if (!mongaRole || !interaction.member.roles.cache.has(mongaRole.id)) {
-                await interaction.reply('Você não tem permissão para usar este comando.');
-                console.log(`Usuário ${interaction.user.tag} não tem permissão para usar este comando.`);
-                return;
+        try {
+            if (roleKey && rolesMap[roleKey]) {
+                // Validação específica para a role 'admin'
+                if (roleKey === 'admin' && !member.roles.cache.some(role => role.name === ROLE_MONGA_NAME)) {
+                    await interaction.reply('Você precisa ter a role "🐵monga" para usar este comando.');
+                    return;
+                }
+                await toggleRole(interaction, target, rolesMap[roleKey]);
+            } else {
+                await interaction.reply('Cargo não reconhecido.');
             }
-        }
-
-        // Verifica se o bot tem permissão para gerenciar cargos
-        if (!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageRoles)) {
-            await interaction.reply('Eu não tenho permissão para gerenciar cargos. Verifique minhas permissões.');
-            return;
-        }
-
-        // Lógica de adicionar/remover cargo
-        if (target.roles.cache.has(role.id)) {
-            await target.roles.remove(role);
-            await interaction.reply(`${target.user.tag} teve o cargo **${roleNameMapped}** removido.`);
-        } else {
-            await target.roles.add(role);
-            await interaction.reply(`${target.user.tag} agora tem o cargo **${roleNameMapped}**.`);
-        }
-
-        // Enviar log no canal específico
-        const logChannel = interaction.guild.channels.cache.get(LOG_CHANNEL_ID);
-        if (logChannel) {
-            const logEmbed = new EmbedBuilder()
-                .setTitle('Registro de Cargo')
-                .setDescription(`${interaction.user.tag} alterou o cargo de ${target.user.tag}`)
-                .addFields(
-                    { name: 'Cargo', value: roleNameMapped, inline: true },
-                    { name: 'Ação', value: target.roles.cache.has(role.id) ? 'Removido' : 'Adicionado', inline: true }
-                )
-                .setColor('#f39c12')
-                .setTimestamp();
-
-            logChannel.send({ embeds: [logEmbed] });
+        } catch (error) {
+            console.error('Erro no comando:', error);
+            await interaction.reply('Houve um erro ao executar o comando. Tente novamente mais tarde.');
         }
     }
-};
+}
+
+async function toggleRole(interaction, target, roleName) {
+    const role = interaction.guild.roles.cache.find(r => r.name === roleName);
+
+    if (!role) {
+        await interaction.reply(`Cargo "${roleName}" não encontrado.`);
+        return;
+    }
+
+    // Verifica se o usuário já tem o cargo
+    if (target.roles.cache.has(role.id)) {
+        await target.roles.remove(role);
+        await interaction.reply(`${target.user.tag} teve o cargo "${roleName}" removido.`);
+    } else {
+        await target.roles.add(role);
+        await interaction.reply(`${target.user.tag} agora tem o cargo "${roleName}".`);
+    }
+}
+
+module.exports = { handleCommand };
