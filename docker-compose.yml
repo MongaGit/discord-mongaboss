@@ -1,8 +1,14 @@
 services:
-  bot:
-    build: .
-    container_name: bot-mongaboss
+  mongaboss:
+    image: lorthe/discord-mongaboss:latest
+    container_name: mongaboss
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_SERVER=${DISCORD_SERVER}
+      - LOG_CHANNEL_ID=${LOG_CHANNEL_ID}
+      - ROLE_MONGA_NAME=${ROLE_MONGA_NAME}
+      - ROLE_ADMIN=${ROLE_ADMIN}
+      - TIME_ROLE=${TIME_ROLE}
+      - DEPLOY_COMMANDS=${DEPLOY_COMMANDS}
     restart: unless-stopped
-    volumes:
-      - .:/app
-      - /app/node_modules
