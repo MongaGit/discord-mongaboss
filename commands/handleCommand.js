@@ -1,9 +1,8 @@
-﻿//import .env
-require('dotenv').config();;
-const { PermissionsBitField, EmbedBuilder } = require('discord.js');
+﻿const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 
-// Role fixa '🐵monga' se não houver var ROLE_MONGA_NAME
-const ROLE_MONGA_NAME = process.env.ROLE_MONGA_NAME || '🐵monga'
+// Variáveis de ambiente
+const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || '1097557088818954250';
+const ROLE_MONGA_NAME = process.env.ROLE_MONGA_NAME || '🐵monga';
 
 const rolesMap = {
     'rpg': '🎲rpg',
@@ -26,19 +25,10 @@ async function handleCommand(interaction) {
         const target = options.getMember('user') || member;
 
         try {
-            // Verificação de permissões do bot
+            // Verifica se o bot tem permissão para gerenciar cargos
             if (!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageRoles)) {
                 await interaction.reply('Eu não tenho permissão para gerenciar cargos. Verifique as minhas permissões.');
                 return;
-            }
-
-            // Verificação se a role '🐵monga' existe para atribuir 'admin'
-            if (roleKey === 'admin') {
-                const mongaRole = interaction.guild.roles.cache.find(r => r.name === ROLE_MONGA_NAME);
-                if (!mongaRole) {
-                    await interaction.reply(`A role "${ROLE_MONGA_NAME}" não foi encontrada. Verifique a configuração do servidor.`);
-                    return;
-                }
             }
 
             if (roleKey && rolesMap[roleKey]) {
@@ -48,13 +38,26 @@ async function handleCommand(interaction) {
                     return;
                 }
 
+                // Verifica se a role '🐵monga' existe no servidor
+                const mongaRole = interaction.guild.roles.cache.find(r => r.name === ROLE_MONGA_NAME);
+                if (!mongaRole) {
+                    await interaction.reply(`A role "${ROLE_MONGA_NAME}" não foi encontrada. Verifique a configuração do servidor.`);
+                    return;
+                }
+
+                // Chama a função que adiciona ou remove a role
                 await toggleRole(interaction, target, rolesMap[roleKey]);
+
+                // Envia log de auditoria
+                await sendAuditLog(interaction, target, roleKey);
             } else {
                 await interaction.reply('Cargo não reconhecido.');
             }
         } catch (error) {
             console.error('Erro no comando:', error);
-            await interaction.reply('Houve um erro ao executar o comando. Tente novamente mais tarde.');
+            if (!interaction.replied) {
+                await interaction.reply('Houve um erro ao executar o comando. Tente novamente mais tarde.');
+            }
         }
     }
 }
@@ -70,33 +73,30 @@ async function toggleRole(interaction, target, roleName) {
     // Verifica se o usuário já tem o cargo
     if (target.roles.cache.has(role.id)) {
         await target.roles.remove(role);
-        await interaction.reply({
-            embeds: [new EmbedBuilder().setColor('#ff0000').setDescription(`❌ ${target.user.tag} teve o cargo **${roleName}** removido.`)]
-        });
-
-        // Log de auditoria
-        await sendAuditLog(`${interaction.user.tag} removeu o cargo **${roleName}** de ${target.user.tag}`);
+        await interaction.reply({ embeds: [new EmbedBuilder().setColor('#FF0000').setDescription(`❌ ${target.user.tag} teve o cargo **${roleName}** removido.`)] });
     } else {
         await target.roles.add(role);
-        await interaction.reply({
-            embeds: [new EmbedBuilder().setColor('#00ff00').setDescription(`✅ ${target.user.tag} agora tem o cargo **${roleName}**.`)]
-        });
-
-        // Log de auditoria
-        await sendAuditLog(`${interaction.user.tag} atribuiu o cargo **${roleName}** a ${target.user.tag}`);
+        await interaction.reply({ embeds: [new EmbedBuilder().setColor('#00FF00').setDescription(`✅ ${target.user.tag} agora tem o cargo **${roleName}**.`)] });
     }
 }
 
-async function sendAuditLog(content) {
-    const logChannel = await interaction.client.channels.fetch(process.env.LOG_CHANNEL_ID);
+async function sendAuditLog(interaction, target, roleKey) {
+    const embed = new EmbedBuilder()
+        .setColor('#0099ff')
+        .setTitle('Log de Auditoria')
+        .setDescription(`${interaction.user.tag} **${roleKey}** no usuário ${target.user.tag}`)
+        .addFields(
+            { name: 'Ação', value: target.roles.cache.has(rolesMap[roleKey]) ? 'Remoção' : 'Atribuição' },
+            { name: 'Cargo', value: rolesMap[roleKey] },
+            { name: 'Responsável', value: interaction.user.tag },
+        )
+        .setTimestamp()
+        .setFooter({ text: 'Audit Log' });
+
+    // Envia para o canal de log
+    const logChannel = await interaction.guild.channels.fetch(LOG_CHANNEL_ID);
     if (logChannel) {
-        const embed = new EmbedBuilder()
-            .setColor('#ff0000')
-            .setDescription(content)
-            .setTimestamp();
         await logChannel.send({ embeds: [embed] });
-    } else {
-        console.error('Canal de log não encontrado.');
     }
 }
 
