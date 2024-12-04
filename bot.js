@@ -1,5 +1,5 @@
 ﻿require('dotenv').config();
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, PermissionsBitField, EmbedBuilder } = require('discord.js');
 const { deployCommands } = require('./deployCommands');
 const { handleCommand } = require('./commands/handleCommand');
 
@@ -35,5 +35,19 @@ client.on('interactionCreate', async interaction => {
         await interaction.reply('Ocorreu um erro inesperado ao processar o comando.');
     }
 });
+
+// Envio de logs para o canal de auditoria
+async function sendAuditLog(content) {
+    const logChannel = await client.channels.fetch(process.env.LOG_CHANNEL_ID);
+    if (logChannel) {
+        const embed = new EmbedBuilder()
+            .setColor('#ff0000')
+            .setDescription(content)
+            .setTimestamp();
+        await logChannel.send({ embeds: [embed] });
+    } else {
+        console.error('Canal de log não encontrado.');
+    }
+}
 
 client.login(process.env.DISCORD_TOKEN);
