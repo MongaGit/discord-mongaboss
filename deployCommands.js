@@ -3,27 +3,30 @@ const { Routes } = require('discord-api-types/v9');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 require('dotenv').config();
 
-const commands = [
-    new SlashCommandBuilder()
+// Map de cargos
+const rolesMap = {
+    'rpg': '🎲rpg',
+    'game': '🎮game',
+    'art': '🖌️art',
+    'skynet': '🧊skynet',
+    'rpgmod': '🎲rpg-mod',
+    'gamemod': '🎮game-mod',
+    'artmod': '🖌️art-mod',
+    'skynetmod': '🧊skynet-mod',
+    'admin': 'Administrador'
+};
+
+// Construção dos comandos
+const commands = Object.keys(rolesMap).map(roleKey => {
+    return new SlashCommandBuilder()
         .setName('cargo')
         .setDescription('Gerencia cargos no servidor')
         .addSubcommand(subcommand =>
-            subcommand.setName('rpg')
-                .setDescription('Atribui a role RPG ao usuário')
-                .addUserOption(option => option.setName('user').setDescription('O usuário para atribuir o cargo').setRequired(false)))
-        .addSubcommand(subcommand =>
-            subcommand.setName('game')
-                .setDescription('Atribui a role Game ao usuário')
-                .addUserOption(option => option.setName('user').setDescription('O usuário para atribuir o cargo').setRequired(false)))
-        .addSubcommand(subcommand =>
-            subcommand.setName('dev-art')
-                .setDescription('Atribui a role Dev-Art ao usuário')
-                .addUserOption(option => option.setName('user').setDescription('O usuário para atribuir o cargo').setRequired(false)))
-        .addSubcommand(subcommand =>
-            subcommand.setName('admin')
-                .setDescription('Atribui a role Administrador temporariamente')
-                .addUserOption(option => option.setName('user').setDescription('O usuário para atribuir o cargo').setRequired(false)))
-].map(command => command.toJSON());
+            subcommand.setName(roleKey)
+                .setDescription(`Atribui a role ${rolesMap[roleKey]} ao usuário`)
+                .addUserOption(option => option.setName('user').setDescription('O usuário para atribuir o cargo').setRequired(false))
+        );
+});
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
 
