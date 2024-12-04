@@ -1,5 +1,4 @@
 ﻿const { PermissionsBitField, EmbedBuilder } = require('discord.js');
-const { sendAuditLog } = require('../sendAuditLog'); // Importa a função de envio de log
 
 // Variáveis de ambiente
 const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || '1097557088818954250';
@@ -57,8 +56,9 @@ async function handleCommand(interaction) {
                         await interaction.reply({ embeds: [new EmbedBuilder().setColor('#FF0000').setDescription(`❌ ${target.user.tag} teve o cargo **Administrador** removido.`)] });
                         console.log(`${target.user.tag} já tinha o cargo 'Administrador'. Cargo removido imediatamente.`);
 
-                        // Envia log de auditoria
+                        // Envia log para o canal de auditoria
                         await sendAuditLog(`${target.user.tag} teve o cargo **Administrador** removido imediatamente.`);
+
                     } else {
                         // Caso o usuário não tenha a role, adiciona e inicia o temporizador para remoção
                         await target.roles.add(adminRole);
@@ -66,11 +66,10 @@ async function handleCommand(interaction) {
 
                         // Inicia o temporizador para remover a role após TIME_ROLE segundos
                         console.log(`Iniciando o temporizador para remover o cargo 'Administrador' de ${target.user.tag} após ${TIME_ROLE} segundos.`);
-
-                        // Envia log de auditoria
-                        await sendAuditLog(`${target.user.tag} recebeu o cargo **Administrador**. O cargo será removido após ${TIME_ROLE} segundos.`);
-
                         await setRoleTimeout(interaction, target, adminRole, TIME_ROLE);
+
+                        // Envia log para o canal de auditoria
+                        await sendAuditLog(`${target.user.tag} recebeu o cargo **Administrador**. Cargo será removido após ${TIME_ROLE} segundos.`);
                     }
                 }
             } else {
@@ -96,16 +95,16 @@ async function setRoleTimeout(interaction, target, role, timeInSeconds) {
             // Remove diretamente a role 'Administrador', sem verificação adicional
             await member.roles.remove(role);
             console.log(`Cargo "${role.name}" removido de ${target.user.tag} após ${timeInSeconds} segundos.`);
-
-            // Envia log de auditoria
-            await sendAuditLog(`O cargo **${role.name}** foi removido de ${target.user.tag} após ${timeInSeconds} segundos.`);
-
             await interaction.followUp({ embeds: [new EmbedBuilder().setColor('#FFCC00').setDescription(`🔔 O cargo **${role.name}** foi removido de ${target.user.tag} após ${timeInSeconds} segundos.`)] });
+
+            // Envia log para o canal de auditoria
+            await sendAuditLog(`O cargo **${role.name}** foi removido de ${target.user.tag} após ${timeInSeconds} segundos.`);
 
         } catch (error) {
             console.error('Erro ao tentar remover o cargo:', error);
         }
     }, timeInSeconds * 1000); // Converte o tempo de segundos para milissegundos
 }
+
 
 module.exports = { handleCommand };

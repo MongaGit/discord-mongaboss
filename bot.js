@@ -39,6 +39,7 @@ client.on('interactionCreate', async interaction => {
 // Envio de logs para o canal de auditoria
 async function sendAuditLog(content) {
     const logChannel = await client.channels.fetch(process.env.LOG_CHANNEL_ID);
+    console.log('Canal de log:', logChannel);
     if (logChannel) {
         const embed = new EmbedBuilder()
             .setColor('#ff0000')
@@ -49,5 +50,6 @@ async function sendAuditLog(content) {
         console.error('Canal de log não encontrado.');
     }
 }
+
 
 client.login(process.env.DISCORD_TOKEN);
