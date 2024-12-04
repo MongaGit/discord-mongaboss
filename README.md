@@ -81,19 +81,11 @@ O bot estará pronto para uso no seu servidor Discord!
 
 Este projeto é licenciado sob a [MIT License](https://opensource.org/licenses/MIT).
 
+--- 
 
+# Manual building and running
 
-
-
-
-
-
-
-
-
-
-
-# Docker Compose
+# Docker Run
 ```bash
 docker run -d \
   -e DISCORD_TOKEN=****** \
@@ -106,6 +98,8 @@ docker run -d \
   -e DEPLOY_COMMANDS=1 \
   --name mongaboss lorthe/discord-mongaboss:latest
 ````
+
+
 ### Pré-requisitos  
 
 - Node.js  
