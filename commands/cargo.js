@@ -45,7 +45,7 @@ async function handleCommand(interaction) {
                 // Lógica específica para a role 'admin' com temporizador
                 if (roleKey === 'admin') {
                     if (!member.roles.cache.some(role => role.name === ROLE_MONGA_NAME)) {
-                        await interaction.reply(`Você precisa ter a role **${ROLE_MONGA_NAME}** para usar este comando.`);
+                        await interaction.reply(`❌ Você precisa ter a role **${ROLE_MONGA_NAME}** para usar este comando.`);
                         return;
                     }
 
@@ -69,7 +69,7 @@ async function handleCommand(interaction) {
                 } else if (role) {
                     // Lógica para roles simples e moderadoras
                     if (roleKey.includes('-mod') && !member.roles.cache.some(r => r.name === ROLE_MONGA_NAME)) {
-                        await interaction.reply(`Você precisa ter a role "${ROLE_MONGA_NAME}" para usar este comando.`);
+                        await interaction.reply(`❌ Você precisa ter a role "${ROLE_MONGA_NAME}" para usar este comando.`);
                         return;
                     }
 
@@ -83,15 +83,15 @@ async function handleCommand(interaction) {
                         await sendAuditLog(interaction.client, `${target.user.tag} recebeu o cargo **${role.name}**.`);
                     }
                 } else {
-                    await interaction.reply('Cargo não reconhecido.');
+                    await interaction.reply('❌ Cargo não reconhecido.');
                 }
             } else {
-                await interaction.reply('Cargo não reconhecido.');
+                await interaction.reply('❌ Cargo não reconhecido.');
             }
         } catch (error) {
             console.error('Erro no comando:', error);
             if (!interaction.replied) {
-                await interaction.reply('Houve um erro ao executar o comando. Tente novamente mais tarde.');
+                await interaction.reply('❌ Houve um erro ao executar o comando. Tente novamente mais tarde.');
             }
         }
     }
@@ -104,7 +104,7 @@ async function setRoleTimeout(interaction, target, role, timeInSeconds) {
             await member.roles.remove(role);
             await sendAuditLog(interaction.client, `O cargo **${role.name}** foi removido de ${target.user.tag} após ${timeInSeconds} segundos.`);
         } catch (error) {
-            console.error('Erro ao tentar remover o cargo:', error);
+            console.error('❌ Erro ao tentar remover o cargo:', error);
         }
     }, timeInSeconds * 1000);
 }
