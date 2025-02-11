@@ -15,14 +15,14 @@ Defina as variáveis de ambiente no arquivo `.env`:
 
 | Variável             | Descrição                                  | Exemplo                              |
 |----------------------|--------------------------------------------|--------------------------------------|
-| `DISCORD_TOKEN`      | Token do bot                               | `xxxxxxxxxxxxxxxxxxxx`               |
-| `DISCORD_CLIENT_ID`  | ID do cliente do bot                       | `1311076424395915415`                |
-| `DISCORD_SERVER`     | ID do servidor                             | `406071925815902208`                 |
-| `LOG_CHANNEL_ID`     | ID do canal de logs                        | `1097557088818954250`                |
-| `ROLE_MONGA_NAME`    | Nome da role especial `monga`              | `🐵monga`                            |
-| `ROLE_ADMIN`         | Nome da role de administrador              | `Administrador`                      |
-| `TIME_ROLE`          | Duração (em minutos) para roles temporárias| `1440` (24 horas)                    |
-| `DEPLOY_COMMANDS`    | Atualizar comandos no Discord?             | `1` (Sim), `0` (Não)                 |
+| `MONGABOSS_DISCORD_TOKEN`      | Token do bot                               | `xxxxxxxxxxxxxxxxxxxx`               |
+| `MONGABOSS_DISCORD_CLIENT_ID`  | ID do cliente do bot                       | `1311076424395915415`                |
+| `MONGABOSS_DISCORD_SERVER`     | ID do servidor                             | `406071925815902208`                 |
+| `MONGABOSS_LOG_CHANNEL_ID`     | ID do canal de logs                        | `1097557088818954250`                |
+| `MONGABOSS_ROLE_MONGA_NAME`    | Nome da role especial `monga`              | `🐵monga`                            |
+| `MONGABOSS_ROLE_ADMIN`         | Nome da role de administrador              | `Administrador`                      |
+| `MONGABOSS_TIME_ROLE`          | Duração (em minutos) para roles temporárias| `1440` (24 horas)                    |
+| `MONGABOSS_DEPLOY_COMMANDS`    | Atualizar comandos no Discord?             | `1` (Sim), `0` (Não)                 |
 
 ---
 
@@ -37,28 +37,28 @@ services:
     image: lorthe/discord-mongaboss:latest
     container_name: mongaboss
     environment:
-      - DISCORD_TOKEN=${DISCORD_TOKEN}
-      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
-      - DISCORD_SERVER=${DISCORD_SERVER}
-      - LOG_CHANNEL_ID=${LOG_CHANNEL_ID}
-      - ROLE_MONGA_NAME=${ROLE_MONGA_NAME}
-      - ROLE_ADMIN=${ROLE_ADMIN}
-      - TIME_ROLE=${TIME_ROLE}
-      - DEPLOY_COMMANDS=${DEPLOY_COMMANDS}
+      - MONGABOSS_DISCORD_TOKEN=${MONGABOSS_DISCORD_TOKEN}
+      - MONGABOSS_DISCORD_CLIENT_ID=${MONGABOSS_DISCORD_CLIENT_ID}
+      - MONGABOSS_DISCORD_SERVER=${MONGABOSS_DISCORD_SERVER}
+      - MONGABOSS_LOG_CHANNEL_ID=${MONGABOSS_LOG_CHANNEL_ID}
+      - MONGABOSS_ROLE_MONGA_NAME=${MONGABOSS_ROLE_MONGA_NAME}
+      - MONGABOSS_ROLE_ADMIN=${MONGABOSS_ROLE_ADMIN}
+      - MONGABOSS_TIME_ROLE=${MONGABOSS_TIME_ROLE}
+      - MONGABOSS_DEPLOY_COMMANDS=${MONGABOSS_DEPLOY_COMMANDS}
     restart: unless-stopped
 ```
 
 2. Crie o arquivo `.env` no mesmo diretório:
 
 ```dotenv
-DISCORD_TOKEN=SeuTokenAqui
-DISCORD_CLIENT_ID=SeuClientIdAqui
-DISCORD_SERVER=SeuServerIdAqui
-LOG_CHANNEL_ID=SeuChannelIdAqui
-ROLE_MONGA_NAME=🐵monga
-ROLE_ADMIN=Administrador
-TIME_ROLE=1440
-DEPLOY_COMMANDS=1
+MONGABOSS_DISCORD_TOKEN=SeuTokenAqui
+MONGABOSS_DISCORD_CLIENT_ID=SeuClientIdAqui
+MONGABOSS_DISCORD_SERVER=SeuServerIdAqui
+MONGABOSS_LOG_CHANNEL_ID=SeuChannelIdAqui
+MONGABOSS_ROLE_MONGA_NAME=🐵monga
+MONGABOSS_ROLE_ADMIN=Administrador
+MONGABOSS_TIME_ROLE=1440
+MONGABOSS_DEPLOY_COMMANDS=1
 ```
 
 3. Inicie o bot:
@@ -73,14 +73,14 @@ docker-compose up -d
 
 ```bash
 docker run -d \
-  -e DISCORD_TOKEN=seu_token \
-  -e DISCORD_CLIENT_ID=seu_client_id \
-  -e DISCORD_SERVER=seu_server_id \
-  -e LOG_CHANNEL_ID=canal_logs \
-  -e ROLE_MONGA_NAME=🐵monga \
-  -e ROLE_ADMIN=Administrador \
-  -e TIME_ROLE=1440 \
-  -e DEPLOY_COMMANDS=1 \
+  -e MONGABOSS_DISCORD_TOKEN=seu_token \
+  -e MONGABOSS_DISCORD_CLIENT_ID=seu_client_id \
+  -e MONGABOSS_DISCORD_SERVER=seu_server_id \
+  -e MONGABOSS_LOG_CHANNEL_ID=canal_logs \
+  -e MONGABOSS_ROLE_MONGA_NAME=🐵monga \
+  -e MONGABOSS_ROLE_ADMIN=Administrador \
+  -e MONGABOSS_TIME_ROLE=1440 \
+  -e MONGABOSS_DEPLOY_COMMANDS=1 \
   --name mongaboss lorthe/discord-mongaboss:latest
 ```
 

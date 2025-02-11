@@ -30,17 +30,32 @@ Object.keys(rolesMap).forEach(roleKey => {
     );
 });
 
-const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
+const rest = new REST({ version: '9' }).setToken(process.env.MONGABOSS_DISCORD_TOKEN);
 
-async function deployCommands() {
-    try {
-        await rest.put(
-            Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID, process.env.DISCORD_SERVER),
-            { body: [cargoCommand.toJSON()] },
-        );
-        console.log('Comandos (/) implantados com sucesso!');
-    } catch (error) {
-        console.error('Erro ao implantar comandos:', error);
+async function deployCommands(retries = 3) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            await rest.put(
+                Routes.applicationGuildCommands(
+                    process.env.MONGABOSS_DISCORD_CLIENT_ID,
+                    process.env.MONGABOSS_DISCORD_SERVER
+                ),
+                { body: [cargoCommand.toJSON()] }
+            );
+            console.log('✅ Comandos (/) implantados com sucesso!');
+            return;
+        } catch (error) {
+            if (error.code === 'EAI_AGAIN') {
+                console.log(`⚠️ Tentativa ${i + 1}/${retries} falhou. Problemas de conexão detectados.`);
+                if (i < retries - 1) {
+                    // Espera 5 segundos antes de tentar novamente
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    continue;
+                }
+            }
+            console.error('❌ Erro ao implantar comandos:', error);
+            throw error;
+        }
     }
 }
 

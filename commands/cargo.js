@@ -2,8 +2,8 @@ const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 const { sendAuditLog } = require('../utils/auditLog');  // Importando a função sendAuditLog
 
 // Variáveis de ambiente
-const ROLE_MONGA_NAME = process.env.ROLE_MONGA_NAME || '🐵monga';
-const TIME_ROLE = parseInt(process.env.TIME_ROLE) || 1440;
+const MONGABOSS_ROLE_MONGA_NAME = process.env.MONGABOSS_ROLE_MONGA_NAME || '🐵monga';
+const MONGABOSS_TIME_ROLE = parseInt(process.env.MONGABOSS_TIME_ROLE) || 1440;
 
 const rolesMap = {
     'rpg': '🎲rpg',
@@ -20,6 +20,11 @@ const rolesMap = {
 async function handleCommand(interaction) {
     if (!interaction.isCommand()) return;
 
+    // Verifica se a interação já foi diferida/respondeu, se não, difere
+    if (!interaction.deferred && !interaction.replied) {
+        await interaction.deferReply();
+    }
+
     const { commandName, options, member } = interaction;
 
     if (commandName === 'cargo') {
@@ -28,14 +33,14 @@ async function handleCommand(interaction) {
         const target = options.getMember('user') || member;
 
         // Verifica se o membro tem a role "monga" ao usar @user
-        if (options.getMember('user') && !member.roles.cache.some(role => role.name === ROLE_MONGA_NAME)) {
-            await interaction.reply(`❌ Você precisa ter a role **${ROLE_MONGA_NAME}** para usar este comando com a menção de um usuário.`);
+        if (options.getMember('user') && !member.roles.cache.some(role => role.name === MONGABOSS_ROLE_MONGA_NAME)) {
+            await interaction.editReply(`❌ Você precisa ter a role **${MONGABOSS_ROLE_MONGA_NAME}** para usar este comando com a menção de um usuário.`);
             return;
         }
 
         try {
             if (!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageRoles)) {
-                await interaction.reply('Eu não tenho permissão para gerenciar cargos. Verifique as minhas permissões.');
+                await interaction.editReply('Eu não tenho permissão para gerenciar cargos. Verifique as minhas permissões.');
                 return;
             }
 
@@ -44,54 +49,54 @@ async function handleCommand(interaction) {
 
                 // Lógica específica para a role 'admin' com temporizador
                 if (roleKey === 'admin') {
-                    if (!member.roles.cache.some(role => role.name === ROLE_MONGA_NAME)) {
-                        await interaction.reply(`❌ Você precisa ter a role **${ROLE_MONGA_NAME}** para usar este comando.`);
+                    if (!member.roles.cache.some(role => role.name === MONGABOSS_ROLE_MONGA_NAME)) {
+                        await interaction.editReply(`❌ Você precisa ter a role **${MONGABOSS_ROLE_MONGA_NAME}** para usar este comando.`);
                         return;
                     }
 
                     const adminRole = interaction.guild.roles.cache.find(r => r.name === 'Administrador');
                     if (!adminRole) {
-                        await interaction.reply('A role "Administrador" não foi encontrada no servidor.');
+                        await interaction.editReply('A role "Administrador" não foi encontrada no servidor.');
                         return;
                     }
 
                     if (target.roles.cache.has(adminRole.id)) {
                         await target.roles.remove(adminRole);
-                        await interaction.reply({ embeds: [new EmbedBuilder().setColor('#FF0000').setDescription(`❌ ${target.user.tag} teve o cargo **Administrador** removido.`)] });
+                        await interaction.editReply({ embeds: [new EmbedBuilder().setColor('#FF0000').setDescription(`❌ ${target.user.tag} teve o cargo **Administrador** removido.`)] });
                         await sendAuditLog(interaction.client, `${target.user.tag} teve o cargo **Administrador** removido.`);
                     } else {
                         await target.roles.add(adminRole);
-                        await interaction.reply({ embeds: [new EmbedBuilder().setColor('#00FF00').setDescription(`✅ ${target.user.tag} agora tem o cargo **Administrador**.`)] });
+                        await interaction.editReply({ embeds: [new EmbedBuilder().setColor('#00FF00').setDescription(`✅ ${target.user.tag} agora tem o cargo **Administrador**.`)] });
                         await sendAuditLog(interaction.client, `${target.user.tag} recebeu o cargo **Administrador**.`);
 
-                        setRoleTimeout(interaction, target, adminRole, TIME_ROLE);
+                        setRoleTimeout(interaction, target, adminRole, MONGABOSS_TIME_ROLE);
                     }
                 } else if (role) {
                     // Lógica para roles simples e moderadoras
-                    if (roleKey.includes('-mod') && !member.roles.cache.some(r => r.name === ROLE_MONGA_NAME)) {
-                        await interaction.reply(`❌ Você precisa ter a role "${ROLE_MONGA_NAME}" para usar este comando.`);
+                    if (roleKey.includes('-mod') && !member.roles.cache.some(r => r.name === MONGABOSS_ROLE_MONGA_NAME)) {
+                        await interaction.editReply(`❌ Você precisa ter a role "${MONGABOSS_ROLE_MONGA_NAME}" para usar este comando.`);
                         return;
                     }
 
                     if (target.roles.cache.has(role.id)) {
                         await target.roles.remove(role);
-                        await interaction.reply({ embeds: [new EmbedBuilder().setColor('#FF0000').setDescription(`❌ ${target.user.tag} teve o cargo **${role.name}** removido.`)] });
+                        await interaction.editReply({ embeds: [new EmbedBuilder().setColor('#FF0000').setDescription(`❌ ${target.user.tag} teve o cargo **${role.name}** removido.`)] });
                         await sendAuditLog(interaction.client, `${target.user.tag} teve o cargo **${role.name}** removido.`);
                     } else {
                         await target.roles.add(role);
-                        await interaction.reply({ embeds: [new EmbedBuilder().setColor('#00FF00').setDescription(`✅ ${target.user.tag} agora tem o cargo **${role.name}**.`)] });
+                        await interaction.editReply({ embeds: [new EmbedBuilder().setColor('#00FF00').setDescription(`✅ ${target.user.tag} agora tem o cargo **${role.name}**.`)] });
                         await sendAuditLog(interaction.client, `${target.user.tag} recebeu o cargo **${role.name}**.`);
                     }
                 } else {
-                    await interaction.reply('❌ Cargo não reconhecido.');
+                    await interaction.editReply('❌ Cargo não reconhecido.');
                 }
             } else {
-                await interaction.reply('❌ Cargo não reconhecido.');
+                await interaction.editReply('❌ Cargo não reconhecido.');
             }
         } catch (error) {
             console.error('Erro no comando:', error);
             if (!interaction.replied) {
-                await interaction.reply('❌ Houve um erro ao executar o comando. Tente novamente mais tarde.');
+                await interaction.editReply('❌ Houve um erro ao executar o comando. Tente novamente mais tarde.');
             }
         }
     }

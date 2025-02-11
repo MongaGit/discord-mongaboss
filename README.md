@@ -1,6 +1,13 @@
 ﻿[![Docs](https://img.shields.io/badge/Documentação-DEPLOYMENT.md-007BFF?logo=read-the-docs&logoColor=white&style=flat-square)](./DEPLOYMENT.md)
 [![Docker](https://img.shields.io/badge/Docker-Hub-2496ED?logo=docker&logoColor=white&style=flat-square)](https://hub.docker.com/r/lorthe/discord-mongaboss)
-## 📘 **Mongaboss - Comandos de Cargo**
+
+## 📘 **Mongaboss**
+
+Este bot faz parte de um projeto com múltiplos bots exclusivos para um canal no Discord. 
+
+Desenvolvido e mantido por mim, com foco em **containerização** e **ciclo de vida completo do projeto**. Todo o ambiente de desenvolvimento, testes e produção é gerenciado no meu **homelab**, utilizando **Proxmox** para virtualização e **Docker** para gerenciamento de containers.
+
+---
 
 ### 🚀 **Comando `/cargo`**  
 **Uso:** `/cargo <subcomando> [@user]`  
@@ -43,10 +50,4 @@
 🔐 **Permissões:**  
 - **Subcomandos básicos:** Todos os membros.  
 - **Subcomandos de moderação:** Apenas membros com **🐵Monga**.
-
-
-
-
-
-
 
